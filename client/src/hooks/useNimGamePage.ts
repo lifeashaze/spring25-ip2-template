@@ -15,19 +15,30 @@ import { GameInstance } from '../types';
 
 const useNimGamePage = (gameState: GameInstance) => {
   const { user, socket } = useUserContext();
-
-  // TODO: Task 2 - Define the state variable to store the current move (`move`)
+  const [move, setMove] = useState<number | null>(null);
 
   const handleMakeMove = async () => {
-    // TODO: Task 2 - Emit a socket event to make a move in the Nim game
+    if (move === null) {
+      return;
+    }
+
+    socket.emit('makeMove', {
+      gameID: gameState.gameID,
+      move: {
+        playerID: user._id || '',
+        gameID: gameState.gameID,
+        move: { numObjects: move },
+      },
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // TODO: Task 2 - Update the move state based on the user input.
-    // The move should be a number between 1 and 3, and apply this validation before
-    // updating the state.
-
     const { value } = e.target;
+    const numValue = parseInt(value);
+
+    if (!Number.isNaN(numValue) && numValue >= 1 && numValue <= 3) {
+      setMove(numValue);
+    }
   };
 
   return {
