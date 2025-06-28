@@ -90,7 +90,22 @@ describe('getUsersList', () => {
     expect(retrievedUsers[0].dateJoined).toEqual(safeUser.dateJoined);
   });
 
-  // TODO: Task 1 - Add more tests for getUsersList
+  it('should return an error if there is a database error while fetching users', async () => {
+    mockingoose(UserModel).toReturn(new Error('Error fetching users'), 'find');
+
+    const getUsersError = await getUsersList();
+
+    expect('error' in getUsersError).toBe(true);
+  });
+
+  it('should return an empty array if no users are found', async () => {
+    mockingoose(UserModel).toReturn([], 'find');
+
+    const retrievedUsers = (await getUsersList()) as SafeUser[];
+
+    expect(retrievedUsers).toEqual([]);
+    expect(retrievedUsers.length).toBe(0);
+  });
 });
 
 describe('loginUser', () => {
