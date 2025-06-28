@@ -126,13 +126,17 @@ const userController = (socket: FakeSOSocket) => {
    * @returns A promise resolving to void.
    */
   const getUsers = async (_: Request, res: Response): Promise<void> => {
-    const users = await getUsersList();
+    try {
+      const users = await getUsersList();
 
-    if ('error' in users) {
-      throw Error(users.error);
+      if ('error' in users) {
+        throw Error(users.error);
+      }
+
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).send(`Error when getting users: ${error}`);
     }
-
-    res.status(200).json(users);
   };
 
   /**
@@ -206,6 +210,10 @@ const userController = (socket: FakeSOSocket) => {
       }
 
       const updatedUser = await updateUser(req.body.username, { biography: req.body.biography });
+
+      if ('error' in updatedUser) {
+        throw Error(updatedUser.error);
+      }
 
       // Emit socket event for real-time updates
       socket.emit('userUpdate', {
