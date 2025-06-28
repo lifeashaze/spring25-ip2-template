@@ -33,7 +33,7 @@ const useAuth = (authType: 'login' | 'signup') => {
    * Toggles the visibility of the password input field.
    */
   const togglePasswordVisibility = () => {
-    // TODO - Task 1: Toggle password visibility
+    setShowPassword(!showPassword);
   };
 
   /**
@@ -46,7 +46,13 @@ const useAuth = (authType: 'login' | 'signup') => {
     e: ChangeEvent<HTMLInputElement>,
     field: 'username' | 'password' | 'confirmPassword',
   ) => {
-    // TODO - Task 1: Handle input changes for the fields
+    if (field === 'username') {
+      setUsername(e.target.value);
+    } else if (field === 'password') {
+      setPassword(e.target.value);
+    } else if (field === 'confirmPassword') {
+      setPasswordConfirmation(e.target.value);
+    }
   };
 
   /**
@@ -56,8 +62,6 @@ const useAuth = (authType: 'login' | 'signup') => {
    * @returns {boolean} True if inputs are valid, false otherwise.
    */
   const validateInputs = (): boolean => {
-    // TODO - Task 1: Validate inputs for login and signup forms
-    // Display any errors to the user
     if (authType === 'login') {
       if (!username || !password) {
         setErr('Please enter a username and password');
@@ -85,7 +89,6 @@ const useAuth = (authType: 'login' | 'signup') => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // TODO - Task 1: Validate inputs
     if (!validateInputs()) {
       setErr('Invalid inputs');
       return;
@@ -93,8 +96,6 @@ const useAuth = (authType: 'login' | 'signup') => {
 
     let user: User;
     try {
-      // TODO - Task 1: Handle the form submission, calling appropriate API routes
-      // based on the auth type
       if (authType === 'login') {
         user = await loginUser({ username, password });
       } else if (authType === 'signup') {
@@ -108,9 +109,7 @@ const useAuth = (authType: 'login' | 'signup') => {
       setUser(user);
       navigate('/home');
     } catch (error) {
-      // TODO - Task 1: Display error message
       setErr('Invalid username or password');
-      return;
     }
   };
 

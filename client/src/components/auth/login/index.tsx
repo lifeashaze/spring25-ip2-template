@@ -23,13 +23,12 @@ const Login = () => {
       <h2>Welcome to FakeStackOverflow!</h2>
       <h3>Please login to continue.</h3>
       <form onSubmit={handleSubmit}>
-
         <h4>Please enter your username.</h4>
         <input
           type='text'
           className='input-text'
           value={username}
-          onChange={(e) => handleInputChange(e, 'username')}
+          onChange={e => handleInputChange(e, 'username')}
           placeholder='Username'
         />
 
@@ -38,7 +37,7 @@ const Login = () => {
           type={showPassword ? 'text' : 'password'}
           className='input-text'
           value={password}
-          onChange={(e) => handleInputChange(e, 'password')}
+          onChange={e => handleInputChange(e, 'password')}
           placeholder='Password'
         />
 
@@ -51,7 +50,7 @@ const Login = () => {
           />
           <label htmlFor='showPasswordToggle'>Show Password</label>
         </div>
-        
+
         <button type='submit' className='login-button'>
           Submit
         </button>

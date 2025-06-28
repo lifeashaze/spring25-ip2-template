@@ -60,19 +60,17 @@ const ProfileSettings: React.FC = () => {
                   <button
                     className='login-button'
                     style={{ marginLeft: '1rem' }}
-                    onClick={
-                      /* TODO: Task 1 - Complete the click handler function to enter the editing mode and 
-                      initialize the editing field with the current user profile biography. */ () => {}
-                    }>
+                    onClick={() => {
+                      setEditBioMode(true);
+                      setNewBio(userData.biography || '');
+                    }}>
                     Edit
                   </button>
                 )}
               </p>
             )}
 
-            {/* TODO: Task 1 - Conditionally render the below `div` such that it's only displayed when currently
-            editing the biography, and the user has the permission to make edits to the profile. */}
-            {
+            {editBioMode && canEditProfile && (
               <div style={{ margin: '1rem 0' }}>
                 <input
                   className='input-text'
@@ -93,7 +91,7 @@ const ProfileSettings: React.FC = () => {
                   Cancel
                 </button>
               </div>
-            }
+            )}
 
             <p>
               <strong>Date Joined:</strong>{' '}
@@ -101,21 +99,23 @@ const ProfileSettings: React.FC = () => {
             </p>
 
             {/* ---- Reset Password Section ---- */}
-            {
-              /* TODO: Task 1 - Conditionally render the component such that it's only displayed 
-              if the current user has the appropriate permissions to edit the profile. */
+            {canEditProfile && (
               <>
                 <h4>Reset Password</h4>
-                {/* TODO: Task 1 - Add an input field for the password input.
-                The input field should correctly update the value when text
-                is entered. Make sure that the password visibility is correctly toggled.
-                Use the 'input-text' class for styling.
-                */}
-                {/* TODO: Task 1 - Add an input field for the password confirmation input.
-                The input field should correctly update the value when text
-                is entered. Make sure that the password visibility is correctly toggled.
-                Use the 'input-text' class for styling.
-                */}
+                <input
+                  className='input-text'
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='New Password'
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                />
+                <input
+                  className='input-text'
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='Confirm Password'
+                  value={confirmNewPassword}
+                  onChange={e => setConfirmNewPassword(e.target.value)}
+                />
                 <button className='toggle-password-button' onClick={togglePasswordVisibility}>
                   {showPassword ? 'Hide Passwords' : 'Show Passwords'}
                 </button>
@@ -123,19 +123,16 @@ const ProfileSettings: React.FC = () => {
                   Reset
                 </button>
               </>
-            }
-
+            )}
             {/* ---- Danger Zone (Delete User) ---- */}
-            {
-              /* TODO: Task 1 - Conditionally render the component such that it's only displayed 
-              if the current user has the appropriate permissions to edit the profile. */
+            {canEditProfile && (
               <>
                 <h4>Danger Zone</h4>
                 <button className='delete-button' onClick={handleDeleteUser}>
                   Delete This User
                 </button>
               </>
-            }
+            )}
           </>
         ) : (
           <p>No user data found. Make sure the username parameter is correct.</p>
