@@ -18,28 +18,40 @@ const useAllGamesPage = () => {
   const navigate = useNavigate();
   const [availableGames, setAvailableGames] = useState<GameInstance[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchGames = async () => {
-    // TODO: Task 2 - Fetch and update the list of available games state
+    try {
+      const games = await getGames(undefined, undefined);
+      setAvailableGames(games);
+    } catch (err) {
+      setError(`Error fetching games: ${err}`);
+    }
   };
 
   const handleCreateGame = async (gameType: GameType) => {
-    // TODO: Task 2 - Create a new game with the provided type
-    fetchGames(); // Refresh the list after creating a game
+    try {
+      await createGame(gameType);
+      await fetchGames();
+    } catch (err) {
+      setError(`Error creating game: ${err}`);
+    }
   };
 
   const handleJoin = (gameID: string) => {
     navigate(`/games/${gameID}`);
   };
 
-  // TODO: Task 2 - Implement the `useEffect` hook to fetch the list of available games on component mount
+  useEffect(() => {
+    fetchGames();
+  }, []);
 
   const handleToggleModal = () => {
-    // TODO: Task 2 - Toggle the visibility of the game creation modal
+    setIsModalOpen(!isModalOpen);
   };
 
   const handleSelectGameType = (gameType: GameType) => {
-    // TODO: Task 2 - Create a new game with the selected game type and toggle the modal
+    handleCreateGame(gameType);
   };
 
   return {
@@ -49,6 +61,7 @@ const useAllGamesPage = () => {
     isModalOpen,
     handleToggleModal,
     handleSelectGameType,
+    error,
   };
 };
 
