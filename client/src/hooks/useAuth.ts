@@ -58,6 +58,22 @@ const useAuth = (authType: 'login' | 'signup') => {
   const validateInputs = (): boolean => {
     // TODO - Task 1: Validate inputs for login and signup forms
     // Display any errors to the user
+    if (authType === 'login') {
+      if (!username || !password) {
+        setErr('Please enter a username and password');
+        return false;
+      }
+    } else if (authType === 'signup') {
+      if (!username || !password || !passwordConfirmation) {
+        setErr('Please enter a username, password, and password confirmation');
+        return false;
+      }
+      if (password !== passwordConfirmation) {
+        setErr('Passwords do not match');
+        return false;
+      }
+    }
+    return true;
   };
 
   /**
@@ -70,18 +86,31 @@ const useAuth = (authType: 'login' | 'signup') => {
     event.preventDefault();
 
     // TODO - Task 1: Validate inputs
+    if (!validateInputs()) {
+      setErr('Invalid inputs');
+      return;
+    }
 
     let user: User;
-
     try {
       // TODO - Task 1: Handle the form submission, calling appropriate API routes
       // based on the auth type
+      if (authType === 'login') {
+        user = await loginUser({ username, password });
+      } else if (authType === 'signup') {
+        user = await createUser({ username, password });
+      } else {
+        setErr('Invalid authentication type');
+        return;
+      }
 
       // Redirect to home page on successful login/signup
       setUser(user);
       navigate('/home');
     } catch (error) {
       // TODO - Task 1: Display error message
+      setErr('Invalid username or password');
+      return;
     }
   };
 
