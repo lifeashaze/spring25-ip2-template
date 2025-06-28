@@ -23,6 +23,7 @@ const Login = () => {
       <h2>Welcome to FakeStackOverflow!</h2>
       <h3>Please login to continue.</h3>
       <form onSubmit={handleSubmit}>
+
         <h4>Please enter your username.</h4>
         <input
           type='text'
@@ -32,7 +33,6 @@ const Login = () => {
           placeholder='Username'
         />
 
-        
         <h4>Please enter your password.</h4>
         <input
           type={showPassword ? 'text' : 'password'}
@@ -41,6 +41,7 @@ const Login = () => {
           onChange={(e) => handleInputChange(e, 'password')}
           placeholder='Password'
         />
+
         <div className='show-password'>
           <input
             type='checkbox'
@@ -50,6 +51,7 @@ const Login = () => {
           />
           <label htmlFor='showPasswordToggle'>Show Password</label>
         </div>
+        
         <button type='submit' className='login-button'>
           Submit
         </button>
