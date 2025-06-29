@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Chat, ChatUpdatePayload, Message, User } from '../types';
 import useUserContext from './useUserContext';
 import { createChat, getChatById, getChatsByUser, sendMessage } from '../services/chatService';
@@ -16,6 +16,9 @@ const useDirectMessage = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  const selectedChatRef = useRef<Chat | null>(null);
+  selectedChatRef.current = selectedChat;
 
   const handleJoinChat = (chatID: string) => {
     // TODO: Task 3 - Emit a 'joinChat' event to the socket with the chat ID function argument.
@@ -75,6 +78,30 @@ const useDirectMessage = () => {
     }
   };
 
+  const handleChatUpdate = useCallback((chatUpdate: ChatUpdatePayload) => {
+    switch (chatUpdate.type) {
+      case 'created':
+        setChats(prevChats => {
+          const chatExists = prevChats.some(chat => chat._id === chatUpdate.chat._id);
+          if (chatExists) {
+            return prevChats;
+          }
+          return [...prevChats, chatUpdate.chat];
+        });
+        break;
+      case 'newMessage':
+        if (selectedChatRef.current && selectedChatRef.current._id === chatUpdate.chat._id) {
+          setSelectedChat(chatUpdate.chat);
+        }
+        setChats(prevChats =>
+          prevChats.map(chat => (chat._id === chatUpdate.chat._id ? chatUpdate.chat : chat)),
+        );
+        break;
+      default:
+        throw new Error(`Invalid chatUpdate type: ${chatUpdate.type}`);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -85,41 +112,17 @@ const useDirectMessage = () => {
       }
     };
 
-    const handleChatUpdate = (chatUpdate: ChatUpdatePayload) => {
-      switch (chatUpdate.type) {
-        case 'created':
-          setChats(prevChats => {
-            const chatExists = prevChats.some(chat => chat._id === chatUpdate.chat._id);
-            if (chatExists) {
-              return prevChats;
-            }
-            return [...prevChats, chatUpdate.chat];
-          });
-          break;
-        case 'newMessage':
-          if (selectedChat && selectedChat._id === chatUpdate.chat._id) {
-            setSelectedChat(chatUpdate.chat);
-          }
-          setChats(prevChats =>
-            prevChats.map(chat => (chat._id === chatUpdate.chat._id ? chatUpdate.chat : chat)),
-          );
-          break;
-        default:
-          throw new Error(`Invalid chatUpdate type: ${chatUpdate.type}`);
-      }
-    };
-
     fetchChats();
 
     socket.on('chatUpdate', handleChatUpdate);
 
     return () => {
       socket.off('chatUpdate', handleChatUpdate);
-      if (selectedChat?._id) {
-        socket.emit('leaveChat', selectedChat._id);
+      if (selectedChatRef.current?._id) {
+        socket.emit('leaveChat', selectedChatRef.current._id);
       }
     };
-  }, [user.username, socket, selectedChat?._id, selectedChat]);
+  }, [user.username, socket, handleChatUpdate]);
 
   return {
     selectedChat,
