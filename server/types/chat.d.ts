@@ -20,6 +20,7 @@ export interface MessageInChat extends Message {
  */
 export interface Chat {
   // TODO: Task 3 - Define the properties of the Chat interface
+  _id: ObjectId;
   participants: ObjectId[];
   messages: MessageInChat[];
 }
@@ -97,7 +98,7 @@ export interface GetChatByParticipantsRequest extends Request {
   params: {
     username: string;
   };
-s}
+}
 
 /**
  * A type representing the possible responses for a Chat operation:
