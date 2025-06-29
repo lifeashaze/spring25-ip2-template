@@ -15,6 +15,7 @@ const useDirectMessage = () => {
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [chats, setChats] = useState<Chat[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleJoinChat = (chatID: string) => {
     // TODO: Task 3 - Emit a 'joinChat' event to the socket with the chat ID function argument.
@@ -35,13 +36,12 @@ const useDirectMessage = () => {
 
       await sendMessage(messageData, selectedChat._id);
       setNewMessage('');
-    } catch (error) {
-      console.error('Error sending message:', error);
+    } catch (err) {
+      setError(`Error sending message: ${err}`);
     }
   };
 
   const handleChatSelect = async (chatID: string | undefined) => {
-
     if (!chatID) {
       return;
     }
@@ -50,8 +50,8 @@ const useDirectMessage = () => {
       const chat = await getChatById(chatID);
       setSelectedChat(chat);
       handleJoinChat(chatID);
-    } catch (error) {
-      console.error('Error fetching chat:', error);
+    } catch (err) {
+      setError(`Error fetching chat: ${err}`);
     }
   };
 
@@ -70,8 +70,8 @@ const useDirectMessage = () => {
       handleJoinChat(newChat._id!);
       setShowCreatePanel(false);
       setChatToCreate('');
-    } catch (error) {
-      console.error('Error creating chat:', error);
+    } catch (err) {
+      setError(`Error creating chat: ${err}`);
     }
   };
 
@@ -80,13 +80,12 @@ const useDirectMessage = () => {
       try {
         const userChats = await getChatsByUser(user.username);
         setChats(userChats);
-      } catch (error) {
-        console.error('Error fetching chats:', error);
+      } catch (err) {
+        setError(`Error fetching chats: ${err}`);
       }
     };
 
     const handleChatUpdate = (chatUpdate: ChatUpdatePayload) => {
-
       switch (chatUpdate.type) {
         case 'created':
           setChats(prevChats => {
@@ -120,7 +119,7 @@ const useDirectMessage = () => {
         socket.emit('leaveChat', selectedChat._id);
       }
     };
-  }, [user.username, socket, selectedChat?._id]);
+  }, [user.username, socket, selectedChat?._id, selectedChat]);
 
   return {
     selectedChat,
@@ -134,6 +133,7 @@ const useDirectMessage = () => {
     handleChatSelect,
     handleUserSelect,
     handleCreateChat,
+    error,
   };
 };
 
