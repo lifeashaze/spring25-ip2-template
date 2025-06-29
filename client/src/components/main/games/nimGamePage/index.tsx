@@ -29,24 +29,39 @@ const NimGamePage = ({ gameState }: { gameState: GameInstance }) => {
       </div>
       <div className='nim-game-details'>
         <h2>Current Game</h2>
-        {/* TODO: Task 2 - Display the following game details using <p> elements:
-          - Player 1: The username of player 1, or "Waiting..." if no player has joined yet.
-          - Player 2: The username of player 2, or "Waiting..." if no player has joined yet.
-          - Current Player to Move: The username of the player who should make the next move.
-          - Remaining Objects: The number of objects remaining in the pile.
-          - Winner: The winner of the game, or "No winner" if the winner is not defined. (Conditionally rendered)
-        */}
-        {/* TODO: Task 2 - Conditionally render game move input for an in progress game */}
-        {
+        <p>Player 1: {gameState.players[0] || 'Waiting...'}</p>
+        <p>Player 2: {gameState.players[1] || 'Waiting...'}</p>
+        <p>
+          Current Player to Move:{' '}
+          {gameState.state.moves.length % 2 === 0
+            ? gameState.state.player1 || 'Waiting...'
+            : gameState.state.player2 || 'Waiting...'}
+        </p>
+        <p>Remaining Objects: {gameState.state.remainingObjects}</p>
+        <p>Winner: {gameState.state.winners ? gameState.state.winners.join(', ') : 'No winner'}</p>
+        {gameState.state.status === 'IN_PROGRESS' && (
           <div className='nim-game-move'>
             <h3>Make Your Move</h3>
-            {/* TODO: Task 2 - Implement the input field which takes a number input.
-            Use the class name 'input-move' for styling. */}
-            {/* TODO: Task 2 - Implement the submit button which submits the entered move.
-            The button should be disabled if it is not the user's turn.
-            Use the class name 'btn-submit' for styling. */}
+            <input
+              type='number'
+              className='input-move'
+              min='1'
+              max='3'
+              onChange={handleInputChange}
+            />
+            <button
+              className='btn-submit'
+              onClick={handleMakeMove}
+              disabled={
+                !move ||
+                (gameState.state.moves.length % 2 === 0
+                  ? gameState.state.player1 !== user.username
+                  : gameState.state.player2 !== user.username)
+              }>
+              Submit Move
+            </button>
           </div>
-        }
+        )}
       </div>
     </>
   );

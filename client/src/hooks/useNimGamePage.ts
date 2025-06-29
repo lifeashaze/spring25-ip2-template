@@ -18,23 +18,21 @@ const useNimGamePage = (gameState: GameInstance) => {
   const [move, setMove] = useState<number | null>(null);
 
   const handleMakeMove = async () => {
-    if (move === null) {
-      return;
-    }
-
+    const nimMove = {
+      playerID: user.username,
+      gameID: gameState.gameID,
+      move: { numObjects: Number(move) },
+    };
+    
     socket.emit('makeMove', {
       gameID: gameState.gameID,
-      move: {
-        playerID: user._id || '',
-        gameID: gameState.gameID,
-        move: { numObjects: move },
-      },
+      move: nimMove,
     });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    const numValue = parseInt(value);
+    const numValue = parseInt(value, 10);
 
     if (!Number.isNaN(numValue) && numValue >= 1 && numValue <= 3) {
       setMove(numValue);

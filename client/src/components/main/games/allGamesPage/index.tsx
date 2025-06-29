@@ -45,7 +45,7 @@ const AllGamesPage = () => {
             Refresh List
           </button>
           <div className='game-items'>
-            {availableGames.map((game) => (
+            {availableGames.map(game => (
               <GameCard key={game.gameID} game={game} handleJoin={handleJoin} />
             ))}
           </div>
