@@ -21,7 +21,6 @@ const useDirectMessage = () => {
   selectedChatRef.current = selectedChat;
 
   const handleJoinChat = (chatID: string) => {
-    // TODO: Task 3 - Emit a 'joinChat' event to the socket with the chat ID function argument.
     socket.emit('joinChat', chatID);
   };
 
