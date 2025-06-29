@@ -195,6 +195,47 @@ describe('Chat service', () => {
   });
 
   // ----------------------------------------------------------------------------
+  // 4. getChat
+  // ----------------------------------------------------------------------------
+  describe('getChat', () => {
+    it('should retrieve a chat by its ID successfully', async () => {
+      const chatId = new mongoose.Types.ObjectId().toString();
+      const mockChat: Chat = {
+        _id: new mongoose.Types.ObjectId(),
+        participants: ['user1', 'user2'],
+        messages: [new mongoose.Types.ObjectId()],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as unknown as Chat;
+
+      mockingoose(ChatModel).toReturn(mockChat, 'findOne');
+
+      const result = await getChat(chatId);
+
+      if ('error' in result) {
+        throw new Error('Expected a chat, got an error');
+      }
+
+      expect(result._id).toEqual(mockChat._id);
+      expect(result.participants).toEqual(mockChat.participants);
+      expect(result.messages).toEqual(mockChat.messages);
+    });
+
+    it('should return an error when chat is not found', async () => {
+      const chatId = new mongoose.Types.ObjectId().toString();
+
+      mockingoose(ChatModel).toReturn(null, 'findOne');
+
+      const result = await getChat(chatId);
+
+      expect(result).toHaveProperty('error');
+      if ('error' in result) {
+        expect(result.error).toBe('Chat not found');
+      }
+    });
+  });
+
+  // ----------------------------------------------------------------------------
   // 5. addParticipantToChat
   // ----------------------------------------------------------------------------
   describe('addParticipantToChat', () => {

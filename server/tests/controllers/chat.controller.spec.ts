@@ -3,8 +3,6 @@ import supertest from 'supertest';
 import { app } from '../../app';
 import * as chatService from '../../services/chat.service';
 import * as databaseUtil from '../../utils/database.util';
-import MessageModel from '../../models/messages.model';
-import ChatModel from '../../models/chat.model';
 import { Chat } from '../../types/chat';
 import { Message } from '../../types/message';
 
@@ -29,7 +27,7 @@ describe('Chat Controller', () => {
   beforeEach(() => {
     mockingoose.resetAll();
     jest.clearAllMocks();
-  }); 
+  });
 
   describe('POST /chat/createChat', () => {
     it('should create a new chat successfully', async () => {
@@ -491,6 +489,4 @@ describe('Chat Controller', () => {
       expect(response.text).toBe('Error retrieving chat: Failed populating all retrieved chats');
     });
   });
-
-
 });
