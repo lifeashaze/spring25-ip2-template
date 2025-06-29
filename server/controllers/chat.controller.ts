@@ -31,24 +31,67 @@ const chatController = (socket: FakeSOSocket) => {
    * @param req The incoming request containing chat data.
    * @returns `true` if the body contains valid chat fields; otherwise, `false`.
    */
-  const isCreateChatRequestValid = (req: CreateChatRequest): boolean => false;
-  // TODO: Task 3 - Implement the isCreateChatRequestValid function.
+  const isCreateChatRequestValid = (req: CreateChatRequest): boolean => {
+    const { participants } = req.body;
+
+    if (!participants) {
+      return false;
+    }
+    
+    if (!Array.isArray(participants)) {
+      return false;
+    }
+    
+    if (participants.length === 0) {
+      return false;
+    }
+    
+    return true;
+  };
 
   /**
    * Validates that the request body contains all required fields for a message.
    * @param req The incoming request containing message data.
    * @returns `true` if the body contains valid message fields; otherwise, `false`.
    */
-  const isAddMessageRequestValid = (req: AddMessageRequestToChat): boolean => false;
-  // TODO: Task 3 - Implement the isAddMessageRequestValid function.
+  const isAddMessageRequestValid = (req: AddMessageRequestToChat): boolean => {
+    const { chatId } = req.params;
+    const { msg, msgFrom } = req.body;
+    
+    if (!chatId) {
+      return false;
+    }
+    
+    if (!msg) {
+      return false;
+    }
+    
+    if (!msgFrom) {
+      return false;
+    }
+    
+    return true;
+  };
 
   /**
    * Validates that the request body contains all required fields for a participant.
    * @param req The incoming request containing participant data.
    * @returns `true` if the body contains valid participant fields; otherwise, `false`.
    */
-  const isAddParticipantRequestValid = (req: AddParticipantRequest): boolean => false;
-  // TODO: Task 3 - Implement the isAddParticipantRequestValid function.
+  const isAddParticipantRequestValid = (req: AddParticipantRequest): boolean => {
+    const { chatId } = req.params;
+    const { username } = req.body;
+    
+    if (!chatId) {
+      return false;
+    }
+    
+    if (!username) {
+      return false;
+    }
+    
+    return true;
+  };
 
   /**
    * Creates a new chat with the given participants (and optional initial messages).

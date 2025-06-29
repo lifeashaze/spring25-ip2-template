@@ -3,6 +3,14 @@ import chatSchema from './schema/chat.schema';
 import { Chat } from '../types/chat';
 
 /**
- * Mongoose model for the Chat collection.
+ * Mongoose model for the `Chat` collection.
+ *
+ * This model is created using the `Chat` interface and the `chatSchema`, representing the
+ * `Chat` collection in the MongoDB database, and provides an interface for interacting with
+ * the stored chats.
+ *
+ * @type {Model<Chat>}
  */
-// TODO: Task 3 - Create and export the `ChatModel` model. Refer to other model files for guidance.
+const ChatModel: Model<Chat> = mongoose.model<Chat>('Chat', chatSchema);
+
+export default ChatModel;
