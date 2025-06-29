@@ -13,11 +13,14 @@ import { saveMessage } from './message.service';
  * @throws {Error} - If any user is not found.
  */
 const convertUsernamesToObjectIds = async (usernames: string[]): Promise<ObjectId[]> => {
+  const userPromises = usernames.map(username => UserModel.findOne({ username }));
+  const users = await Promise.all(userPromises);
+
   const participantObjectIds: ObjectId[] = [];
-  for (const username of usernames) {
-    const user = await UserModel.findOne({ username });
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
     if (!user) {
-      throw new Error(`User not found: ${username}`);
+      throw new Error(`User not found: ${usernames[i]}`);
     }
     participantObjectIds.push(user._id);
   }
@@ -32,10 +35,12 @@ const convertUsernamesToObjectIds = async (usernames: string[]): Promise<ObjectI
  */
 export const saveChat = async (chatPayload: CreateChatPayload): Promise<ChatResponse> => {
   try {
-    let messageIds: ObjectId[] = [];
+    const messageIds: ObjectId[] = [];
     if (chatPayload.messages && chatPayload.messages.length > 0) {
-      for (const message of chatPayload.messages) {
-        const savedMessage: MessageResponse = await saveMessage(message);
+      const messagePromises = chatPayload.messages.map(message => saveMessage(message));
+      const savedMessages = await Promise.all(messagePromises);
+
+      for (const savedMessage of savedMessages) {
         if ('error' in savedMessage) {
           throw new Error(savedMessage.error);
         }

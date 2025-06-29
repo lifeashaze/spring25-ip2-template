@@ -5,6 +5,7 @@ import {
   Message,
   MessageInChat,
   QuestionResponse,
+  User,
 } from '../types/types';
 import AnswerModel from '../models/answers.model';
 import QuestionModel from '../models/questions.model';
@@ -89,8 +90,11 @@ export const populateDocument = async (
 
       // filters out null values
       const enrichedMessages = messagesWithUser.filter(Boolean);
-      const participantUsernames = chatDoc.participants.map((participant: any) => participant.username);
-      
+
+      const participantUsernames = (chatDoc.participants as unknown as User[]).map(
+        participant => participant.username,
+      );
+
       const transformedChat: Chat = {
         ...chatDoc.toObject(),
         participants: participantUsernames,
