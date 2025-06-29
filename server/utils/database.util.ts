@@ -54,6 +54,7 @@ export const populateDocument = async (
       ]);
     } else if (type === 'chat') {
       const chatDoc = await ChatModel.findOne({ _id: id }).populate([
+        { path: 'participants', model: UserModel },
         { path: 'messages', model: MessageModel },
       ]);
 
@@ -88,8 +89,11 @@ export const populateDocument = async (
 
       // filters out null values
       const enrichedMessages = messagesWithUser.filter(Boolean);
+      const participantUsernames = chatDoc.participants.map((participant: any) => participant.username);
+      
       const transformedChat: Chat = {
         ...chatDoc.toObject(),
+        participants: participantUsernames,
         messages: enrichedMessages as MessageInChat[],
       };
 

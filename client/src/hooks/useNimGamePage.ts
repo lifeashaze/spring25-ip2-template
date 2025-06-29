@@ -23,7 +23,7 @@ const useNimGamePage = (gameState: GameInstance) => {
       gameID: gameState.gameID,
       move: { numObjects: Number(move) },
     };
-    
+
     socket.emit('makeMove', {
       gameID: gameState.gameID,
       move: nimMove,

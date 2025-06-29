@@ -19,9 +19,10 @@ export interface MessageInChat extends Message {
  * messages is an array of MessageInChat objects.
  */
 export interface Chat {
-  // TODO: Task 3 - Define the properties of the Chat interface
   _id: ObjectId;
-  participants: ObjectId[];
+  participants: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
   messages: MessageInChat[];
 }
 
@@ -30,7 +31,6 @@ export interface Chat {
  * containing `participants` (array of user IDs) and `messages` (raw message objects).
  */
 export interface CreateChatPayload {
-  // TODO: Task 3 - Define the properties of the CreateChatPayload interface
   participants: string[];
   messages?: Message[];
 }
@@ -39,8 +39,7 @@ export interface CreateChatPayload {
  * Express request for creating a chat.
  */
 export interface CreateChatRequest extends Request {
-  // TODO: Task 3 - Define the properties of the CreateChatRequest interface
-  body: CreateChatPayload;  
+  body: CreateChatPayload;
 }
 
 /**
@@ -48,7 +47,6 @@ export interface CreateChatRequest extends Request {
  * containing `msg`, `msgFrom`, and optionally `msgDateTime`.
  */
 export interface AddMessagePayload {
-  // TODO: Task 3 - Define the properties of the AddMessagePayload interface
   msg: string;
   msgFrom: string;
   msgDateTime?: Date;
@@ -58,7 +56,6 @@ export interface AddMessagePayload {
  * Custom request type for routes that require a chatId in params.
  */
 export interface ChatIdRequest extends Request {
-  // TODO: Task 3 - Define the properties of the ChatIdRequest interface
   params: {
     chatId: string;
   };
@@ -68,7 +65,6 @@ export interface ChatIdRequest extends Request {
  * Express request for adding a message to a chat, with `chatId` in the route params.
  */
 export interface AddMessageRequestToChat extends ChatIdRequest {
-  // TODO: Task 3 - Define the properties of the AddMessageRequestToChat interface
   body: AddMessagePayload;
 }
 
@@ -76,7 +72,6 @@ export interface AddMessageRequestToChat extends ChatIdRequest {
  * Payload for adding a participant to a chat.
  */
 export interface AddParticipantPayload {
-  // TODO: Task 3 - Define the properties of the AddParticipantPayload interface
   username: string;
 }
 
@@ -84,7 +79,6 @@ export interface AddParticipantPayload {
  * Express request for adding a participant, with `chatId` in the route params.
  */
 export interface AddParticipantRequest extends ChatIdRequest {
-  // TODO: Task 3 - Define the properties of the AddParticipantRequest interface
   body: AddParticipantPayload;
 }
 
@@ -94,7 +88,6 @@ export interface AddParticipantRequest extends ChatIdRequest {
  * and the `username` parameter will be included in the route.
  */
 export interface GetChatByParticipantsRequest extends Request {
-  // TODO: Task 3 - Define the properties of the ChatIdRequest interface
   params: {
     username: string;
   };
