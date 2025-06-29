@@ -27,8 +27,6 @@ describe('Chat service', () => {
   // 1. saveChat
   // ----------------------------------------------------------------------------
   describe('saveChat', () => {
-    // TODO: Task 3 - Write tests for the saveChat function
-
     it('should successfully save a chat and verify its body (ignore exact IDs)', async () => {
       // 2) Mock message creation
       mockingoose(MessageModel).toReturn(
@@ -54,6 +52,19 @@ describe('Chat service', () => {
         'create',
       );
 
+      const mockMessage: Message = {
+        _id: new mongoose.Types.ObjectId(),
+        msg: 'Hello!',
+        msgFrom: 'testUser',
+        msgDateTime: new Date('2025-01-01T00:00:00Z'),
+        type: 'direct',
+      };
+
+      const mockChatPayload: CreateChatPayload = {
+        participants: ['testUser'],
+        messages: [mockMessage],
+      };
+
       // 4) Call the service
       const result = await saveChat(mockChatPayload);
 
@@ -68,13 +79,36 @@ describe('Chat service', () => {
       expect(result.participants[0]?.toString()).toEqual(expect.any(String));
       expect(result.messages[0]?.toString()).toEqual(expect.any(String));
     });
+
+    it('should return an error when user is not found', async () => {
+      mockingoose(UserModel).toReturn(null, 'findOne');
+
+      const mockMessage: Message = {
+        _id: new mongoose.Types.ObjectId(),
+        msg: 'Hello!',
+        msgFrom: 'testUser',
+        msgDateTime: new Date('2025-01-01T00:00:00Z'),
+        type: 'direct',
+      };
+
+      const mockChatPayload: CreateChatPayload = {
+        participants: ['nonexistentUser'],
+        messages: [mockMessage],
+      };
+
+      const result = await saveChat(mockChatPayload);
+
+      expect(result).toHaveProperty('error');
+      if ('error' in result) {
+        expect(result.error).toContain('User not found');
+      }
+    });
   });
 
   // ----------------------------------------------------------------------------
   // 2. createMessage
   // ----------------------------------------------------------------------------
   describe('createMessage', () => {
-    // TODO: Task 3 - Write tests for the createMessage function
     const mockMessage: Message = {
       msg: 'Hey!',
       msgFrom: 'userX',
@@ -105,13 +139,23 @@ describe('Chat service', () => {
         type: 'direct',
       });
     });
+
+    it('should return an error when message creation fails', async () => {
+      mockingoose(MessageModel).toReturn(new Error('Database error'), 'create');
+
+      const result = await createMessage(mockMessage);
+
+      expect(result).toHaveProperty('error');
+      if ('error' in result) {
+        expect(result.error).toContain('Error when creating message');
+      }
+    });
   });
 
   // ----------------------------------------------------------------------------
   // 3. addMessageToChat
   // ----------------------------------------------------------------------------
   describe('addMessageToChat', () => {
-    // TODO: Task 3 - Write tests for the addMessageToChat function
     it('should add a message ID to an existing chat', async () => {
       const chatId = new mongoose.Types.ObjectId().toString();
       const messageId = new mongoose.Types.ObjectId().toString();
@@ -134,13 +178,26 @@ describe('Chat service', () => {
 
       expect(result.messages).toEqual(mockUpdatedChat.messages);
     });
+
+    it('should return an error when chat is not found', async () => {
+      const chatId = new mongoose.Types.ObjectId().toString();
+      const messageId = new mongoose.Types.ObjectId().toString();
+
+      mockingoose(ChatModel).toReturn(null, 'findOneAndUpdate');
+
+      const result = await addMessageToChat(chatId, messageId);
+
+      expect(result).toHaveProperty('error');
+      if ('error' in result) {
+        expect(result.error).toBe('Chat not found');
+      }
+    });
   });
 
   // ----------------------------------------------------------------------------
   // 5. addParticipantToChat
   // ----------------------------------------------------------------------------
   describe('addParticipantToChat', () => {
-    // TODO: Task 3 - Write tests for the addParticipantToChat function
     it('should add a participant if user exists', async () => {
       // Mock user
       mockingoose(UserModel).toReturn(
@@ -163,6 +220,20 @@ describe('Chat service', () => {
         throw new Error('Expected a chat, got an error');
       }
       expect(result._id).toEqual(mockChat._id);
+    });
+
+    it('should return an error when user is not found', async () => {
+      const chatId = new mongoose.Types.ObjectId().toString();
+      const username = 'nonexistentUser';
+
+      mockingoose(UserModel).toReturn(null, 'findOne');
+
+      const result = await addParticipantToChat(chatId, username);
+
+      expect(result).toHaveProperty('error');
+      if ('error' in result) {
+        expect(result.error).toBe('User not found');
+      }
     });
   });
 
